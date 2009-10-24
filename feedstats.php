@@ -23,15 +23,19 @@ Author URI: http://leonid.shevtsov.me
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$ls_feedstats_visits_table_name = "{$wpdb->prefix}feedvisits";
+function ls_feedstats_visits_table_name()
+{
+  global $wpdb;
+
+  return "{$wpdb->prefix}feedvisits";
+}
 
 function ls_feedstats_install()
 {
   global $wpdb;
-  global $ls_feedstats_visits_table_name;
   
-  if ($wpdb->get_var("SHOW TABLES LIKE '#{$ls_feedstats_visits_table_name}'") != $ls_feedstats_visits_table_name) {
-    $wpdb->query("CREATE TABLE {$ls_feedstats_visits_table_name} (
+  if ($wpdb->get_var("SHOW TABLES LIKE '".ls_feedstats_visits_table_name()."'") != ls_feedstats_visits_table_name()) {
+    $wpdb->query("CREATE TABLE ".ls_feedstats_visits_table_name()." (
       id int NOT NULL AUTO_INCREMENT,
       time int NOT NULL,
       ip varchar(15) NOT NULL,
@@ -62,9 +66,8 @@ function ls_feedstats_get_client_ip()
 function ls_feedstats_visit()
 {
   global $wpdb;
-  global $ls_feedstats_visits_table_name;
 
-  $wpdb->insert($ls_feedstats_visits_table_name, array(
+  $wpdb->insert(ls_feedstats_visits_table_name(), array(
     'time' => time(),
     'ip' => ls_feedstats_get_client_ip(),
     'referer'=> isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '',
