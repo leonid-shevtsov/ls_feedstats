@@ -62,6 +62,12 @@ function ls_feedstats_get_client_ip()
 }
 
 
+function ls_feedstats_plugin_directory()
+{
+  return WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)); 
+}
+
+
 //The method that collects statistics
 function ls_feedstats_visit()
 {
@@ -75,6 +81,23 @@ function ls_feedstats_visit()
    ), array('%d','%s','%s','%s'));
 }
 
+function ls_feedstats_menu()
+{
+  add_options_page('Feed statistics', 'LS-Feedstats', 1, 'ls_feedstats', 'ls_feedstats_page');
+}
+
+
+function ls_feedstats_page()
+{
+  global $wpdb;
+
+  $visits = $wpdb->get_results('SELECT from_unixtime(time) as atime,ip,referer,useragent FROM '.ls_feedstats_visits_table_name().' ORDER BY time DESC', ARRAY_A);
+  include ls_feedstats_plugin_directory().'admin.php';
+}
+
 # Hooks
 register_activation_hook(__FILE__,'ls_feedstats_install');
 add_action('do_feed_rss2', 'ls_feedstats_visit', 1, false);
+# TODO more feed types, segregation by feed type
+
+add_action('admin_menu','ls_feedstats_menu');
