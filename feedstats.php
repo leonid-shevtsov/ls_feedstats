@@ -29,18 +29,17 @@ function ls_feedstats_install()
 {
   global $wpdb;
   global $ls_feedstats_visits_table_name;
-
-  $sql = "CREATE TABLE {$ls_feedstats_visits_table_name} (
-    id int NOT NULL AUTO_INCREMENT,
-    time int NOT NULL,
-    ip varchar(15) NOT NULL,
-    referer varchar(255) NOT NULL,
-    useragent varchar(255) NOT NULL,
-    UNIQUE KEY id (id)
-  );";
-
-  require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-  dbDelta($sql);
+  
+  if ($wpdb->get_var("SHOW TABLES LIKE '#{$ls_feedstats_visits_table_name}'") != $ls_feedstats_visits_table_name) {
+    $wpdb->query("CREATE TABLE {$ls_feedstats_visits_table_name} (
+      id int NOT NULL AUTO_INCREMENT,
+      time int NOT NULL,
+      ip varchar(15) NOT NULL,
+      referer varchar(255) NOT NULL,
+      useragent varchar(255) NOT NULL,
+      UNIQUE KEY id (id)
+    )");
+  }
 }
 
 
