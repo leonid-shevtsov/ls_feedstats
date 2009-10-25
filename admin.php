@@ -13,6 +13,7 @@ TODO do a pretty chart
   <td>ip</td>
   <td>referer</td>
   <td>user agent</td>
+  <td>request uri</td>
 </tr>
 </thead>
 <?php foreach($visits as $visit) { ?>
@@ -21,6 +22,7 @@ TODO do a pretty chart
     <td><?php echo htmlspecialchars($visit['ip']) ?></td>
     <td><?php echo htmlspecialchars($visit['referer']) ?></td>
     <td><?php echo htmlspecialchars($visit['useragent']) ?></td>
+    <td><?php echo htmlspecialchars($visit['request_uri']) ?></td>
   </tr>
 <?php } ?>
 </table>

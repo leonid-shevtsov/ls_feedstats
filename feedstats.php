@@ -77,13 +77,14 @@ function ls_feedstats_visit()
     'time' => time(),
     'ip' => ls_feedstats_get_client_ip(),
     'referer'=> isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '',
-    'useragent'=> isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''
-   ), array('%d','%s','%s','%s'));
+    'useragent'=> isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
+    'request_uri' => $_SERVER['REQUEST_URI'],
+   ), array('%d','%s','%s','%s','%s'));
 }
 
 function ls_feedstats_menu()
 {
-  add_options_page('Feed statistics', 'LS-Feedstats', 1, 'ls_feedstats', 'ls_feedstats_page');
+  add_dashboard_page('Feed statistics', 'LS-Feedstats', 1, 'ls_feedstats', 'ls_feedstats_page');
 }
 
 
@@ -91,13 +92,23 @@ function ls_feedstats_page()
 {
   global $wpdb;
 
-  $visits = $wpdb->get_results('SELECT from_unixtime(time) as atime,ip,referer,useragent FROM '.ls_feedstats_visits_table_name().' ORDER BY time DESC', ARRAY_A);
+  $visits = $wpdb->get_results('SELECT from_unixtime(time) as atime,ip,referer,useragent,request_uri FROM '.ls_feedstats_visits_table_name().' ORDER BY time DESC', ARRAY_A);
   include ls_feedstats_plugin_directory().'admin.php';
 }
 
+function ls_feedstats_add_dashboard_widget()
+{
+  wp_add_dashboard_widget('ls_feedstats_widget', 'LS-Feedstats', 'ls_feedstats_dashboard_widget');
+}
+
+function ls_feedstats_dashboard_widget()
+{
+  echo 'Feed stats';
+}
 # Hooks
 register_activation_hook(__FILE__,'ls_feedstats_install');
 add_action('do_feed_rss2', 'ls_feedstats_visit', 1, false);
 # TODO more feed types, segregation by feed type
 
-add_action('admin_menu','ls_feedstats_menu');
+add_action('admin_menu', 'ls_feedstats_menu');
+add_action('wp_dashboard_setup', 'ls_feedstats_add_dashboard_widget');
